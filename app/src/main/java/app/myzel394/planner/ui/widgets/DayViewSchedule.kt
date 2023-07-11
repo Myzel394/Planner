@@ -36,6 +36,8 @@ data class Event(
     fun getHeight(baseHeight: Dp): Dp {
         val difference = durationInMinutes / 60f;
 
+        print("Difference: $difference");
+
         return baseHeight.times(difference);
     }
 }
@@ -46,24 +48,18 @@ fun DayViewSchedule(
     hourBoxModifier: Modifier = Modifier,
     events: List<Event>,
     eventHeight: Dp = 200.dp,
+    renderBox: @Composable (Event) -> Unit
 ) {
     val lineColor = MaterialTheme.colorScheme.surfaceVariant;
 
     Layout(
         content = {
-            events.forEach { event ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .then(hourBoxModifier)
-                        .height(eventHeight)
-                ) {
-                    Text(text = event.title)
-                }
+            events.forEach {
+                renderBox(it);
             }
         },
         modifier = Modifier
-            .verticalScroll(rememberScrollState())
+            .then(modifier)
             .drawBehind {
                 repeat(23) {
                     drawLine(
@@ -74,7 +70,6 @@ fun DayViewSchedule(
                     )
                 }
             }
-            .then(modifier)
     ){
         measurables, constraints ->
         val height = (24 * eventHeight.toPx()).toInt();
