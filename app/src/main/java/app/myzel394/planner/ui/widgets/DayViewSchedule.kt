@@ -5,13 +5,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.google.android.material.color.MaterialColors
 import kotlinx.datetime.LocalTime
 
 data class Event(
@@ -41,6 +47,8 @@ fun DayViewSchedule(
     events: List<Event>,
     eventHeight: Dp = 200.dp,
 ) {
+    val lineColor = MaterialTheme.colorScheme.surfaceVariant;
+
     Layout(
         content = {
             events.forEach { event ->
@@ -56,6 +64,16 @@ fun DayViewSchedule(
         },
         modifier = Modifier
             .verticalScroll(rememberScrollState())
+            .drawBehind {
+                repeat(23) {
+                    drawLine(
+                        lineColor,
+                        start = Offset(0f, (it + 1) * eventHeight.toPx()),
+                        end = Offset(size.width, (it + 1) * eventHeight.toPx()),
+                        strokeWidth = 1.dp.toPx()
+                    )
+                }
+            }
             .then(modifier)
     ){
         measurables, constraints ->
