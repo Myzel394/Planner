@@ -14,7 +14,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -25,7 +31,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import app.myzel394.planner.ui.models.CreateEventModel
+import app.myzel394.planner.models.CreateEventModel
 import app.myzel394.planner.ui.utils.pxToDp
 import app.myzel394.planner.ui.widgets.DayViewSchedule
 import app.myzel394.planner.ui.widgets.DayViewScheduleSidebar
@@ -36,9 +42,10 @@ import kotlinx.datetime.LocalTime
 
 val CALENDAR_HOUR_HEIGHT = 200.dp;
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CreateScreen(
+
     createEventModel: CreateEventModel = viewModel(),
 ) {
     val windowHeight = pxToDp(LocalContext.current.resources.displayMetrics.heightPixels);
@@ -52,70 +59,80 @@ fun CreateScreen(
     val scrollState = rememberScrollState();
     val lineColor = MaterialTheme.colorScheme.surfaceVariant;
 
-    Box(
-        modifier = Modifier.background(
-            color = MaterialTheme.colorScheme.surface,
-        )
-    ) {
-        CompositionLocalProvider(
-            LocalOverscrollConfiguration provides null
-        ) {
-    Row(
-    ) {
-        DayViewScheduleSidebar(
-            modifier = Modifier
-                .verticalScroll(scrollState),
-            boxModifier = Modifier
-                .drawBehind {
-                    // Bottom line
-                    drawLine(
-                        color = lineColor,
-                        start = Offset(0f, 0f),
-                        end = Offset(size.width, 0f),
-                        strokeWidth = 1.dp.toPx(),
-                    )
-                }
-                .padding(horizontal = 5.dp),
-            height = elementHeight,
-        ) {
-            Text(
-                text = it.toString(),
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier
-                    .background(
-                        color = MaterialTheme.colorScheme.surface,
-                    )
-                    .padding(horizontal = 6.dp)
-            )
-        }
-        DayViewSchedule(
-            events = listOf(
-                Event(
-                    title = "Test",
-                    startTime = LocalTime(12, 0),
-                    endTime = LocalTime(13, 0),
-                ),
-            ),
-            eventHeight = elementHeight,
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(scrollState),
-        ) { event ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(elementHeight)
-                    .background(
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                    ),
-            ) {
-                Text(
-                    text = event.title,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = { /*TODO*/ }) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = "Add",
                 )
+
             }
         }
-    }
-    }
+    ) { contentPadding ->
+        Box(
+            modifier = Modifier
+                .padding(contentPadding)
+        ) {
+            CompositionLocalProvider(
+                LocalOverscrollConfiguration provides null
+            ) {
+        Row() {
+            DayViewScheduleSidebar(
+                modifier = Modifier
+                    .verticalScroll(scrollState),
+                boxModifier = Modifier
+                    .drawBehind {
+                        // Bottom line
+                        drawLine(
+                            color = lineColor,
+                            start = Offset(0f, 0f),
+                            end = Offset(size.width, 0f),
+                            strokeWidth = 1.dp.toPx(),
+                        )
+                    }
+                    .padding(horizontal = 5.dp),
+                height = elementHeight,
+            ) {
+                Text(
+                    text = it.toString(),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.surface,
+                        )
+                        .padding(horizontal = 6.dp)
+                )
+            }
+            DayViewSchedule(
+                events = listOf(
+                    Event(
+                        title = "Test",
+                        startTime = LocalTime(12, 0),
+                        endTime = LocalTime(13, 0),
+                    ),
+                ),
+                eventHeight = elementHeight,
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(scrollState),
+            ) { event ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(elementHeight)
+                        .background(
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                        ),
+                ) {
+                    Text(
+                        text = event.title,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    )
+                }
+            }
+        }
+        }
+        }
     }
 }

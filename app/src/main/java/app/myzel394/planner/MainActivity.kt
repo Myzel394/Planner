@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import app.myzel394.planner.database.AppDatabase
 import app.myzel394.planner.ui.screens.CreateScreen
 import app.myzel394.planner.ui.theme.PlannerTheme
 import com.google.android.material.color.DynamicColors
@@ -20,6 +21,8 @@ import com.google.android.material.color.DynamicColors
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val database: AppDatabase by lazy { AppDatabase.getDatabase(this) }
 
         DynamicColors.applyToActivityIfAvailable(this);
 
