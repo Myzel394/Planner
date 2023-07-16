@@ -40,7 +40,7 @@ class EventsModel(
 class EventModelFactory(
     private val eventDao: EventDAO,
 ): ViewModelProvider.Factory {
-    fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(CreateEventModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return EventsModel(eventDao) as T
