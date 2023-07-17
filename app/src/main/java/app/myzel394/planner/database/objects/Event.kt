@@ -2,6 +2,8 @@ package app.myzel394.planner.database.objects
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -22,5 +24,14 @@ data class Event(
             date.dayOfMonth,
             startTime.hour,
             startTime.minute,
+        );
+
+    val endDateTime
+        get() = LocalDateTime(
+            date.year,
+            date.month,
+            date.dayOfMonth,
+            endTime.hour,
+            endTime.minute,
         );
 }

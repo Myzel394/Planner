@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import app.myzel394.planner.database.daos.EventDAO
 import app.myzel394.planner.database.objects.Event
 
@@ -14,6 +15,7 @@ import app.myzel394.planner.database.objects.Event
     version = 1,
     exportSchema = false,
 )
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun eventDAO(): EventDAO
 

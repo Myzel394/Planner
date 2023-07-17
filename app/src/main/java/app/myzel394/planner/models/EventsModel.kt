@@ -26,14 +26,16 @@ class EventsModel(
         }
     }
 
-    fun createEvent(createEventModel: CreateEventModel): Event {
-         return Event(
-            title = createEventModel.title.value,
-            description = createEventModel.description.value,
-            startTime = createEventModel.startTime.value,
-            endTime = createEventModel.endTime.value,
-            date = createEventModel.date.value,
-        )
+    companion object {
+        fun createEvent(createEventModel: CreateEventModel): Event {
+            return Event(
+                title = createEventModel.title.value,
+                description = createEventModel.description.value,
+                startTime = createEventModel.startTime.value,
+                endTime = createEventModel.endTime.value,
+                date = createEventModel.date.value,
+            )
+        }
     }
 }
 

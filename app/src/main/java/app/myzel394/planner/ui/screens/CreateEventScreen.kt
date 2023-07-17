@@ -51,7 +51,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import app.myzel394.planner.database.AppDatabase
 import app.myzel394.planner.models.CreateEventModel
+import app.myzel394.planner.models.EventModelFactory
+import app.myzel394.planner.models.EventsModel
 import app.myzel394.planner.utils.formatDate
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
@@ -64,6 +67,7 @@ import java.time.format.DateTimeFormatter
 fun CreateEventScreen(
     navController: NavController,
     date: LocalDate,
+    database: AppDatabase,
     createEventModel: CreateEventModel = viewModel(),
 ) {
     val fragmentManager = (LocalContext.current as AppCompatActivity).supportFragmentManager;
@@ -198,14 +202,15 @@ fun CreateEventScreen(
                 }
             }
             Spacer(modifier = Modifier.height(32.dp))
-            TextField(
+            OutlinedTextField(
+                leadingIcon = {
+                    Icon(
+                        Icons.Filled.Description,
+                        contentDescription = null,
+                    )
+                },
                 value = createEventModel.description.value,
                 onValueChange = createEventModel::setDescription,
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                ),
                 label = { Text("Description") },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -216,7 +221,13 @@ fun CreateEventScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(64.dp),
-                onClick = { /*TODO*/ },
+                onClick = {
+                      database
+                          .eventDAO()
+                          .insert(EventsModel.createEvent(createEventModel));
+
+                    navController.popBackStack();
+                },
             ) {
                 Icon(
                     Icons.Filled.Check,

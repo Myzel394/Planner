@@ -17,16 +17,16 @@ import app.myzel394.planner.ui.theme.PlannerTheme
 import com.google.android.material.color.DynamicColors
 
 class MainActivity : AppCompatActivity() {
+    val database: AppDatabase by lazy { AppDatabase.getDatabase(this) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        //val database: AppDatabase by lazy { AppDatabase.getDatabase(this) }
 
         DynamicColors.applyToActivityIfAvailable(this);
 
         setContent {
             PlannerTheme {
-                Navigation()
+                Navigation(database)
             }
         }
     }
