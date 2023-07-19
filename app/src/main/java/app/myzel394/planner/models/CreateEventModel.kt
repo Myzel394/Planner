@@ -85,5 +85,5 @@ class CreateEventModel(): ViewModel() {
     }
 
     val isValid: Boolean
-        get() = title.value.isNotEmpty() && description.value.isNotEmpty() && startTime.value < endTime.value;
+        get() = title.value.isNotEmpty() && startTime.value < endTime.value;
 }
