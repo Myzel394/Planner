@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import app.myzel394.planner.database.daos.EventDAO
 import app.myzel394.planner.database.objects.Event
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -21,7 +22,7 @@ class EventsModel(
     )
 
     fun insertEvent(event: Event) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             event.id = eventDao.insert(event);
         }
     }

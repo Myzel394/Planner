@@ -70,6 +70,9 @@ fun CreateEventScreen(
     database: AppDatabase,
     createEventModel: CreateEventModel = viewModel(),
 ) {
+    val eventsModel = remember {
+        EventsModel(database.eventDAO())
+    }
     val fragmentManager = (LocalContext.current as AppCompatActivity).supportFragmentManager;
     val focusRequester = remember { FocusRequester() }
 
@@ -222,9 +225,11 @@ fun CreateEventScreen(
                     .fillMaxWidth()
                     .height(64.dp),
                 onClick = {
-                      database
-                          .eventDAO()
-                          .insert(EventsModel.createEvent(createEventModel));
+                    eventsModel.insertEvent(
+                        EventsModel.createEvent(
+                            createEventModel,
+                        ),
+                    )
 
                     navController.popBackStack();
                 },
