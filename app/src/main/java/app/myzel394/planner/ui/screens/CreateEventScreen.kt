@@ -1,27 +1,20 @@
 package app.myzel394.planner.ui.screens
 
-import android.provider.CalendarContract.Colors
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddToPhotos
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Title
 import androidx.compose.material3.Button
@@ -33,12 +26,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.PlainTooltipBox
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -46,33 +35,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.myzel394.planner.database.AppDatabase
 import app.myzel394.planner.models.CreateEventModel
-import app.myzel394.planner.models.EventModelFactory
 import app.myzel394.planner.models.EventsModel
-import app.myzel394.planner.utils.formatDate
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
-import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateEventScreen(
     navController: NavController,
     date: LocalDate,
-    database: AppDatabase,
+    eventsModel: EventsModel,
     createEventModel: CreateEventModel = viewModel(),
 ) {
-    val eventsModel = remember {
-        EventsModel(database.eventDAO())
-    }
     val fragmentManager = (LocalContext.current as AppCompatActivity).supportFragmentManager;
     val focusRequester = remember { FocusRequester() }
 
@@ -228,6 +210,7 @@ fun CreateEventScreen(
                     eventsModel.insertEvent(
                         EventsModel.createEvent(
                             createEventModel,
+                            date,
                         ),
                     )
 

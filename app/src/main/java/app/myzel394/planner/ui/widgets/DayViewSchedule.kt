@@ -17,29 +17,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import app.myzel394.planner.database.objects.Event
 import com.google.android.material.color.MaterialColors
 import kotlinx.datetime.LocalTime
 
-data class Event(
-    val title: String,
-    val startTime: LocalTime,
-    val endTime: LocalTime,
-    val color: Color? = null,
-) {
-    val durationInMinutes: Int
-        get() = (endTime.hour - startTime.hour) * 60 + (endTime.minute - startTime.minute);
+fun getYOffset(baseHeight: Dp, startTime: LocalTime): Dp {
+    return baseHeight.times(startTime.hour);
+}
 
-    fun getYOffset(baseHeight: Dp): Dp {
-        return baseHeight.times(startTime.hour);
-    }
+fun getHeight(baseHeight: Dp, durationInMinutes: Int): Dp {
+    val difference = durationInMinutes / 60f;
 
-    fun getHeight(baseHeight: Dp): Dp {
-        val difference = durationInMinutes / 60f;
-
-        print("Difference: $difference");
-
-        return baseHeight.times(difference);
-    }
+    return baseHeight.times(difference);
 }
 
 @Composable
@@ -80,8 +69,8 @@ fun DayViewSchedule(
                 measurable
                     .measure(
                         constraints.copy(
-                            minHeight = event.getHeight(eventHeight).roundToPx(),
-                            maxHeight = event.getHeight(eventHeight).roundToPx(),
+                            minHeight = getHeight(eventHeight, event.durationInMinutes).roundToPx(),
+                            maxHeight = getHeight(eventHeight, event.durationInMinutes).roundToPx(),
                         ),
                     ),
                 event,
@@ -90,7 +79,7 @@ fun DayViewSchedule(
 
         layout(constraints.maxWidth, height) {
             placeables.forEach { (placeable, event) ->
-                placeable.placeRelative(0, event.getYOffset(eventHeight).roundToPx())
+                placeable.placeRelative(0, getYOffset(eventHeight, event.startTime).roundToPx())
             }
         }
     }

@@ -34,4 +34,7 @@ data class Event(
             endTime.hour,
             endTime.minute,
         );
+
+    val durationInMinutes: Int
+        get() = (endTime.hour - startTime.hour) * 60 + (endTime.minute - startTime.minute);
 }

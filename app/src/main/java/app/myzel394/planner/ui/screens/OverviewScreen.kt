@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +24,7 @@ import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -31,14 +33,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.myzel394.planner.models.CreateEventModel
+import app.myzel394.planner.models.EventsModel
 import app.myzel394.planner.ui.Screen
 import app.myzel394.planner.ui.utils.pxToDp
 import app.myzel394.planner.ui.widgets.DayViewSchedule
 import app.myzel394.planner.ui.widgets.DayViewScheduleSidebar
-import app.myzel394.planner.ui.widgets.Event
 import app.myzel394.planner.utils.toISOString
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import kotlinx.coroutines.flow.count
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
@@ -50,6 +53,7 @@ val CALENDAR_HOUR_HEIGHT = 200.dp;
 @Composable
 fun OverviewScreen(
     navController: NavController,
+    eventsModel: EventsModel,
 ) {
     val windowHeight = pxToDp(LocalContext.current.resources.displayMetrics.heightPixels);
     val elementHeight = windowHeight / 12;
@@ -115,13 +119,7 @@ fun OverviewScreen(
                         )
                     }
                     DayViewSchedule(
-                        events = listOf(
-                            Event(
-                                title = "Test",
-                                startTime = LocalTime(12, 0),
-                                endTime = LocalTime(13, 0),
-                            ),
-                        ),
+                        events = eventsModel.events.collectAsState(initial = listOf()).value,
                         eventHeight = elementHeight,
                         modifier = Modifier
                             .weight(1f)
@@ -132,8 +130,11 @@ fun OverviewScreen(
                                 .fillMaxWidth()
                                 .height(elementHeight)
                                 .background(
-                                    color = MaterialTheme.colorScheme.primaryContainer,
-                                ),
+                                    color = MaterialTheme.colorScheme.primaryContainer.copy(
+                                        alpha = 0.2f,
+                                    )
+                                )
+                                .padding(6.dp),
                         ) {
                             Text(
                                 text = event.title,
