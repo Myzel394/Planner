@@ -28,6 +28,12 @@ class EventsModel : ViewModel() {
         }
     }
 
+    fun removeEvent(event: Event) {
+        viewModelScope.launch(Dispatchers.IO) {
+            AppDatabase.INSTANCE!!.eventDAO().delete(event);
+        }
+    }
+
     companion object {
         fun createEvent(createEventModel: CreateEventModel, date: LocalDate): Event {
             return Event(

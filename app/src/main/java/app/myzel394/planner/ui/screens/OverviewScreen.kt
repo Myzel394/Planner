@@ -19,7 +19,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DismissDirection
+import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -27,12 +30,15 @@ import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -46,6 +52,7 @@ import app.myzel394.planner.ui.Screen
 import app.myzel394.planner.ui.utils.pxToDp
 import app.myzel394.planner.ui.widgets.DayViewSchedule
 import app.myzel394.planner.ui.widgets.DayViewScheduleSidebar
+import app.myzel394.planner.ui.widgets.EventDayEntry
 import app.myzel394.planner.utils.toISOString
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
@@ -55,7 +62,6 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-val CALENDAR_HOUR_HEIGHT = 200.dp;
 val FAB_SIZE = 96.dp;
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -132,22 +138,43 @@ fun OverviewScreen(
                         modifier = Modifier
                             .weight(1f),
                     ) { event ->
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(elementHeight)
-                                .background(
-                                    color = MaterialTheme.colorScheme.primaryContainer.copy(
-                                        alpha = 0.2f,
+                        val dismissState = rememberDismissState(
+                            confirmValueChange = { dismissValue ->
+                                when (dismissValue) {
+                                    DismissValue.DismissedToEnd -> {
+                                        eventsModel.removeEvent(event)
+                                    }
+                                    else -> {}
+                                }
+                                false
+                            }
+                        )
+
+                        SwipeToDismiss(
+                            state = dismissState,
+                            directions = setOf(DismissDirection.StartToEnd),
+                            dismissContent = {
+                                EventDayEntry(height = elementHeight, event = event)
+                            },
+                            background = {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(MaterialTheme.shapes.small)
+                                        .background(MaterialTheme.colorScheme.errorContainer)
+                                        .padding(6.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Filled.DeleteForever,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onErrorContainer,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterStart),
                                     )
-                                )
-                                .padding(6.dp),
-                        ) {
-                            Text(
-                                text = event.title,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            )
-                        }
+                                }
+                            }
+                        )
+
                     }
                 }
                 Box(
