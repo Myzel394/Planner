@@ -84,6 +84,9 @@ class CreateEventModel(): ViewModel() {
         return "${hours}h ${minutes}m";
     }
 
-    val isValid: Boolean
-        get() = title.value.isNotEmpty() && startTime.value < endTime.value;
+    fun isValid(isAllDay: Boolean = false): Boolean =
+        title.value.isNotEmpty() && (isAllDay || startTime.value < endTime.value);
+
+    val isAllDay: Boolean
+        get() = startTime.value == LocalTime(0, 0) && endTime.value == LocalTime(23, 59);
 }

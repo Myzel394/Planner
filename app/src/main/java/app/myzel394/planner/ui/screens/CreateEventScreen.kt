@@ -267,12 +267,13 @@ fun CreateEventScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(64.dp),
-                enabled = createEventModel.isValid,
+                enabled = createEventModel.isValid(isAllDay.value),
                 onClick = {
                     eventsModel.insertEvent(
                         EventsModel.createEvent(
                             createEventModel,
                             date,
+                            isAllDay.value,
                         ),
                     )
 

@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 
 class EventsModel : ViewModel() {
     var events by mutableStateOf(
@@ -41,6 +42,42 @@ class EventsModel : ViewModel() {
                 description = createEventModel.description.value,
                 startTime = createEventModel.startTime.value,
                 endTime = createEventModel.endTime.value,
+                date = date,
+            )
+        }
+
+        fun createEvent(
+            createEventModel: CreateEventModel,
+            date: LocalDate,
+            isAllDay: Boolean = true,
+        ): Event {
+            return Event(
+                title = createEventModel.title.value,
+                description = createEventModel.description.value,
+                startTime = when(isAllDay) {
+                    true -> LocalTime(0, 0)
+                        false -> createEventModel.startTime.value
+                },
+                endTime = when(isAllDay) {
+                    true -> LocalTime(23, 59)
+                        false -> createEventModel.endTime.value
+                },
+                date = date,
+            )
+        }
+
+        fun createEvent(
+            title: String,
+            description: String,
+            startTime: LocalTime,
+            endTime: LocalTime,
+            date: LocalDate,
+        ): Event {
+            return Event(
+                title = title,
+                description = description,
+                startTime = startTime,
+                endTime = endTime,
                 date = date,
             )
         }
