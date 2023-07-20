@@ -1,9 +1,7 @@
 package app.myzel394.planner.ui.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,29 +22,23 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import app.myzel394.planner.models.CreateEventModel
 import app.myzel394.planner.models.EventsModel
 import app.myzel394.planner.ui.Screen
 import app.myzel394.planner.ui.utils.pxToDp
@@ -54,11 +46,7 @@ import app.myzel394.planner.ui.widgets.DayViewSchedule
 import app.myzel394.planner.ui.widgets.DayViewScheduleSidebar
 import app.myzel394.planner.ui.widgets.EventDayEntry
 import app.myzel394.planner.utils.toISOString
-import com.google.android.material.timepicker.MaterialTimePicker
-import com.google.android.material.timepicker.TimeFormat
-import kotlinx.coroutines.flow.count
 import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -154,7 +142,7 @@ fun OverviewScreen(
                             state = dismissState,
                             directions = setOf(DismissDirection.StartToEnd),
                             dismissContent = {
-                                EventDayEntry(height = elementHeight, event = event)
+                                EventDayEntry(baseHeight = elementHeight, event = event)
                             },
                             background = {
                                 Box(
@@ -177,38 +165,39 @@ fun OverviewScreen(
 
                     }
                 }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(FAB_SIZE + 32.dp)
-                        .drawBehind {
-                            drawLine(
-                                color = lineColor,
-                                start = Offset(0f, 0f),
-                                end = Offset(size.width, 0f),
-                                strokeWidth = 1.dp.toPx(),
+                if (events.isNotEmpty())
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(FAB_SIZE + 32.dp)
+                            .drawBehind {
+                                drawLine(
+                                    color = lineColor,
+                                    start = Offset(0f, 0f),
+                                    end = Offset(size.width, 0f),
+                                    strokeWidth = 1.dp.toPx(),
+                                )
+                            }
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier
+                                .fillMaxSize(),
+                        ) {
+                            Text(
+                                "Add another event",
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                            Icon(
+                                Icons.Filled.ChevronRight,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(ButtonDefaults.IconSize)
                             )
                         }
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .fillMaxSize(),
-                    ) {
-                        Text(
-                            "Add an event",
-                            style = MaterialTheme.typography.bodySmall,
-                        )
-                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                        Icon(
-                            Icons.Filled.ChevronRight,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(ButtonDefaults.IconSize)
-                        )
                     }
-                }
             }
         }
     }

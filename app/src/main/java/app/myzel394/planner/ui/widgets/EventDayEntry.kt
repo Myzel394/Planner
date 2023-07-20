@@ -15,14 +15,14 @@ import app.myzel394.planner.database.objects.Event
 
 @Composable
 fun EventDayEntry(
-    height: Dp,
+    baseHeight: Dp,
     event: Event,
     modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(height)
+            .height(getHeight(baseHeight, event.durationInMinutes))
             .background(
                 color = MaterialTheme.colorScheme.primaryContainer,
             )
