@@ -4,6 +4,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import app.myzel394.planner.constants.DOUBLE_SPACES_REGEX
+import app.myzel394.planner.constants.NON_ASCII_REGEX
 import app.myzel394.planner.database.daos.EventDAO
 import app.myzel394.planner.database.objects.Event
 import app.myzel394.planner.utils.formatTime
@@ -50,11 +52,11 @@ class CreateEventModel(): ViewModel() {
     var description = mutableStateOf<String>("");
 
     fun setTitle(title: String) {
-        this.title.value = title.trim().replace(Regex("[^A-Za-z0-9 ]"), "");
+        this.title.value = title.replace(DOUBLE_SPACES_REGEX, " ").replace(NON_ASCII_REGEX, "");
     }
 
     fun setDescription(description: String) {
-        this.description.value = description.trim().replace(Regex("[^A-Za-z0-9 ]"), "");
+        this.description.value = description.replace(DOUBLE_SPACES_REGEX, " ").replace(NON_ASCII_REGEX, "");
     }
 
     fun formatStartTime(): String {
