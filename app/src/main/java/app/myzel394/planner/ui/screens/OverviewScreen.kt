@@ -155,8 +155,6 @@ fun OverviewScreen(
                         val (divider, index) = eventDividers[event]!!;
                         var size by remember { mutableStateOf(IntSize.Zero) }
 
-                        println(divider);
-
                         Box(
                             modifier = Modifier.onSizeChanged {
                                 size = it;

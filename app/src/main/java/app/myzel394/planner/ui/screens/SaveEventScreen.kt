@@ -5,16 +5,11 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.expandIn
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.shrinkOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideIn
-import androidx.compose.animation.slideOut
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -60,7 +55,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.myzel394.planner.constants.ExampleDuration
-import app.myzel394.planner.database.AppDatabase
 import app.myzel394.planner.models.CreateEventModel
 import app.myzel394.planner.models.EventsModel
 import com.google.android.material.timepicker.MaterialTimePicker
@@ -70,26 +64,25 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.atDate
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toJavaLocalTime
-import kotlinx.datetime.toKotlinLocalDateTime
 import kotlinx.datetime.toKotlinLocalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateEventScreen(
+fun SaveEventScreen(
     navController: NavController,
     date: LocalDate,
     eventsModel: EventsModel,
     createEventModel: CreateEventModel = viewModel(),
 ) {
-    val fragmentManager = (LocalContext.current as AppCompatActivity).supportFragmentManager;
+    val fragmentManager = (LocalContext.current as AppCompatActivity).supportFragmentManager
     val focusRequester = remember { FocusRequester() }
 
-    var isAllDay = remember {
-        mutableStateOf<Boolean>(false)
+    val isAllDay = remember {
+        mutableStateOf(false)
     }
 
     LaunchedEffect(Unit) {
-        focusRequester.requestFocus();
+        focusRequester.requestFocus()
     }
 
     Scaffold(
@@ -104,7 +97,7 @@ fun CreateEventScreen(
                         IconButton(
                             modifier = Modifier.tooltipAnchor(),
                             onClick = {
-                                navController.popBackStack();
+                                navController.popBackStack()
                             },
                         ) {
                             Icon(Icons.Filled.Close, "backIcon")
@@ -167,7 +160,7 @@ fun CreateEventScreen(
                         .clickable(
                             role = Role.Checkbox,
                             onClick = {
-                                isAllDay.value = !isAllDay.value;
+                                isAllDay.value = !isAllDay.value
                             }
                     ),
                 ) {
@@ -200,13 +193,13 @@ fun CreateEventScreen(
                                     .setHour(createEventModel.startTime.value.hour)
                                     .setMinute(createEventModel.startTime.value.minute)
                                     .setInputMode(MaterialTimePicker.INPUT_MODE_CLOCK)
-                                    .build();
+                                    .build()
                                 dialog.addOnPositiveButtonClickListener {
                                     createEventModel.startTime.value =
-                                        LocalTime(dialog.hour, dialog.minute);
+                                        LocalTime(dialog.hour, dialog.minute)
                                 }
 
-                                dialog.show(fragmentManager, "startTime");
+                                dialog.show(fragmentManager, "startTime")
                             },
                             colors = ButtonDefaults.filledTonalButtonColors(),
                         ) {
@@ -234,13 +227,13 @@ fun CreateEventScreen(
                                     .setHour(createEventModel.endTime.value.hour)
                                     .setMinute(createEventModel.endTime.value.minute)
                                     .setInputMode(MaterialTimePicker.INPUT_MODE_CLOCK)
-                                    .build();
+                                    .build()
                                 dialog.addOnPositiveButtonClickListener {
                                     createEventModel.endTime.value =
-                                        LocalTime(dialog.hour, dialog.minute);
+                                        LocalTime(dialog.hour, dialog.minute)
                                 }
 
-                                dialog.show(fragmentManager, "endTime");
+                                dialog.show(fragmentManager, "endTime")
                             },
                             colors = ButtonDefaults.filledTonalButtonColors(),
                         ) {
@@ -272,10 +265,10 @@ fun CreateEventScreen(
                                 .value
                                 .atDate(date)
                                 .toJavaLocalDateTime()
-                        );
+                        )
 
                     items(durations.size) { index ->
-                        val duration = durations[index];
+                        val duration = durations[index]
 
                         Button(
                             onClick = {
@@ -323,7 +316,7 @@ fun CreateEventScreen(
                         ),
                     )
 
-                    navController.popBackStack();
+                    navController.popBackStack()
                 },
             ) {
                 Icon(

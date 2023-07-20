@@ -9,7 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import app.myzel394.planner.database.AppDatabase
 import app.myzel394.planner.models.EventsModel
-import app.myzel394.planner.ui.screens.CreateEventScreen
+import app.myzel394.planner.ui.screens.SaveEventScreen
 import app.myzel394.planner.ui.screens.OverviewScreen
 import kotlinx.datetime.LocalDateTime
 
@@ -36,7 +36,7 @@ fun Navigation(
             )
 
         ) { entry ->
-            CreateEventScreen(
+            SaveEventScreen(
                 navController = navController,
                 date = LocalDateTime.parse(entry.arguments!!.getString("date")!!).date,
                 eventsModel = eventsModel,
