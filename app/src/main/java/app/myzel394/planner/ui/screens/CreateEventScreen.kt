@@ -6,10 +6,12 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.expandIn
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.shrinkOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideOut
 import androidx.compose.animation.slideOutHorizontally
@@ -24,6 +26,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddToPhotos
 import androidx.compose.material.icons.filled.Check
@@ -56,6 +59,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import app.myzel394.planner.constants.ExampleDuration
 import app.myzel394.planner.database.AppDatabase
 import app.myzel394.planner.models.CreateEventModel
 import app.myzel394.planner.models.EventsModel
@@ -63,6 +67,11 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.atDate
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toJavaLocalTime
+import kotlinx.datetime.toKotlinLocalDateTime
+import kotlinx.datetime.toKotlinLocalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -243,6 +252,43 @@ fun CreateEventScreen(
                             )
                             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                             Text(createEventModel.formatEndTime())
+                        }
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            AnimatedVisibility(
+                visible = !isAllDay.value,
+                enter = expandVertically(),
+                exit = shrinkVertically(),
+            ) {
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    val durations = ExampleDuration
+                        .predefinedDurationsWithTodayDate(
+                            createEventModel
+                                .startTime
+                                .value
+                                .atDate(date)
+                                .toJavaLocalDateTime()
+                        );
+
+                    items(durations.size) { index ->
+                        val duration = durations[index];
+
+                        Button(
+                            onClick = {
+                                      createEventModel.endTime.value = createEventModel
+                                          .startTime
+                                          .value
+                                          .toJavaLocalTime()
+                                          .plusMinutes(duration.minutes.toLong())
+                                          .toKotlinLocalTime()
+                            },
+                            colors = ButtonDefaults.textButtonColors(),
+                        ) {
+                            Text(duration.formatted())
                         }
                     }
                 }
