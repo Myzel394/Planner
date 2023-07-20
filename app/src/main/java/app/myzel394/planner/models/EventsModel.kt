@@ -1,5 +1,7 @@
 package app.myzel394.planner.models
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -33,6 +35,11 @@ class EventsModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             AppDatabase.INSTANCE!!.eventDAO().delete(event);
         }
+    }
+
+    @Composable
+    fun getAsSorted(initialState: List<Event> = listOf()): List<Event> {
+        return events.collectAsState(initial = initialState).value.sortedBy { it.startTime }
     }
 
     companion object {

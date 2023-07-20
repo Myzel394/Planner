@@ -23,7 +23,7 @@ import com.google.android.material.color.MaterialColors
 import kotlinx.datetime.LocalTime
 
 fun getYOffset(baseHeight: Dp, startTime: LocalTime): Dp {
-    return baseHeight.times(startTime.hour);
+    return baseHeight.times(startTime.hour + startTime.minute / 60f);
 }
 
 fun getHeight(baseHeight: Dp, durationInMinutes: Int): Dp {

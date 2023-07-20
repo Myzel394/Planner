@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -31,16 +32,24 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import app.myzel394.planner.models.EventsModel
 import app.myzel394.planner.ui.Screen
+import app.myzel394.planner.ui.utils.dpToPx
+import app.myzel394.planner.ui.utils.getDividers
 import app.myzel394.planner.ui.utils.pxToDp
 import app.myzel394.planner.ui.widgets.DayViewSchedule
 import app.myzel394.planner.ui.widgets.DayViewScheduleSidebar
@@ -59,11 +68,15 @@ fun OverviewScreen(
     navController: NavController,
     eventsModel: EventsModel,
 ) {
+    val windowWidth = pxToDp(LocalContext.current.resources.displayMetrics.widthPixels);
     val windowHeight = pxToDp(LocalContext.current.resources.displayMetrics.heightPixels);
     val elementHeight = windowHeight / 12;
     val scrollState = rememberScrollState();
     val lineColor = MaterialTheme.colorScheme.surfaceVariant;
-    val events = eventsModel.events.collectAsState(initial = listOf()).value;
+    val events = eventsModel.getAsSorted();
+    val eventDividers = getDividers(events);
+
+    println(eventDividers);
 
     Scaffold(
         floatingActionButton = {
@@ -139,36 +152,54 @@ fun OverviewScreen(
                                 false
                             }
                         )
+                        val (divider, index) = eventDividers[event]!!;
+                        var size by remember { mutableStateOf(IntSize.Zero) }
 
-                        SwipeToDismiss(
-                            state = dismissState,
-                            directions = setOf(DismissDirection.StartToEnd),
-                            dismissContent = {
-                                EventDayEntry(
-                                    baseHeight = elementHeight,
-                                    event = event,
-                                    minHeight = MIN_EVENT_HEIGHT,
-                                )
+                        println(divider);
+
+                        Box(
+                            modifier = Modifier.onSizeChanged {
+                                size = it;
                             },
-                            background = {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .clip(MaterialTheme.shapes.small)
-                                        .background(MaterialTheme.colorScheme.errorContainer)
-                                        .padding(6.dp)
-                                ) {
-                                    Icon(
-                                        Icons.Filled.DeleteForever,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onErrorContainer,
-                                        modifier = Modifier
-                                            .align(Alignment.CenterStart),
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .padding(
+                                        start = pxToDp(size.width).times(1f / divider * index)
                                     )
-                                }
+                                    .width(
+                                        pxToDp(size.width).times(1f / divider)
+                                    )
+                            ) {
+                                SwipeToDismiss(
+                                    state = dismissState,
+                                    directions = setOf(DismissDirection.StartToEnd),
+                                    dismissContent = {
+                                        EventDayEntry(
+                                            baseHeight = elementHeight,
+                                            event = event,
+                                            minHeight = MIN_EVENT_HEIGHT,
+                                        )
+                                    },
+                                    background = {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .clip(MaterialTheme.shapes.small)
+                                                .padding(6.dp)
+                                        ) {
+                                            Icon(
+                                                Icons.Filled.DeleteForever,
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.onErrorContainer,
+                                                modifier = Modifier
+                                                    .align(Alignment.CenterStart),
+                                            )
+                                        }
+                                    }
+                                )
                             }
-                        )
-
+                        }
                     }
                 }
                 if (events.isNotEmpty())
