@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import app.myzel394.planner.database.objects.Event
 import com.google.android.material.color.MaterialColors
 import kotlinx.datetime.LocalTime
@@ -34,9 +35,9 @@ fun getHeight(baseHeight: Dp, durationInMinutes: Int): Dp {
 @Composable
 fun DayViewSchedule(
     modifier: Modifier = Modifier,
-    hourBoxModifier: Modifier = Modifier,
     events: List<Event>,
     eventHeight: Dp = 200.dp,
+    minHeight: Dp,
     renderBox: @Composable (Event) -> Unit
 ) {
     val lineColor = MaterialTheme.colorScheme.surfaceVariant;
@@ -69,8 +70,8 @@ fun DayViewSchedule(
                 measurable
                     .measure(
                         constraints.copy(
-                            minHeight = getHeight(eventHeight, event.durationInMinutes).roundToPx(),
-                            maxHeight = getHeight(eventHeight, event.durationInMinutes).roundToPx(),
+                            minHeight = max(minHeight, getHeight(eventHeight, event.durationInMinutes)).roundToPx(),
+                            maxHeight = max(minHeight, getHeight(eventHeight, event.durationInMinutes)).roundToPx(),
                         ),
                     ),
                 event,

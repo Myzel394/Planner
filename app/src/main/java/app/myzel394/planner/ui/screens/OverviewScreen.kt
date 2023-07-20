@@ -51,6 +51,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 val FAB_SIZE = 96.dp;
+val MIN_EVENT_HEIGHT = 20.dp;
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -123,6 +124,7 @@ fun OverviewScreen(
                     DayViewSchedule(
                         events = events,
                         eventHeight = elementHeight,
+                        minHeight = MIN_EVENT_HEIGHT,
                         modifier = Modifier
                             .weight(1f),
                     ) { event ->
@@ -142,7 +144,11 @@ fun OverviewScreen(
                             state = dismissState,
                             directions = setOf(DismissDirection.StartToEnd),
                             dismissContent = {
-                                EventDayEntry(baseHeight = elementHeight, event = event)
+                                EventDayEntry(
+                                    baseHeight = elementHeight,
+                                    event = event,
+                                    minHeight = MIN_EVENT_HEIGHT,
+                                )
                             },
                             background = {
                                 Box(
