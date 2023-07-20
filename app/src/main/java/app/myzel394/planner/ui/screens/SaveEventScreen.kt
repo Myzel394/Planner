@@ -1,7 +1,9 @@
 package app.myzel394.planner.ui.screens
 
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandHorizontally
@@ -10,6 +12,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideOut
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -66,7 +71,9 @@ import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toJavaLocalTime
 import kotlinx.datetime.toKotlinLocalTime
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
+    ExperimentalAnimationApi::class
+)
 @Composable
 fun SaveEventScreen(
     navController: NavController,
@@ -74,6 +81,7 @@ fun SaveEventScreen(
     eventsModel: EventsModel,
     createEventModel: CreateEventModel = viewModel(),
 ) {
+    val context = LocalContext.current;
     val fragmentManager = (LocalContext.current as AppCompatActivity).supportFragmentManager
     val focusRequester = remember { FocusRequester() }
 
@@ -81,7 +89,18 @@ fun SaveEventScreen(
         mutableStateOf(false)
     }
 
+    fun createEvent() {
+        eventsModel.insertEvent(
+            EventsModel.createEvent(
+                createEventModel,
+                date,
+                isAllDay.value,
+            ),
+        )
+    }
+
     LaunchedEffect(Unit) {
+        createEventModel.clear();
         focusRequester.requestFocus()
     }
 
@@ -113,6 +132,15 @@ fun SaveEventScreen(
                         IconButton(
                             modifier = Modifier.tooltipAnchor(),
                             onClick = {
+                                createEvent();
+                                createEventModel.clear();
+                                focusRequester.requestFocus();
+
+                                Toast.makeText(
+                                    context,
+                                    "Event created",
+                                    Toast.LENGTH_SHORT,
+                                ).show();
                             },
                         ) {
                             Icon(Icons.Filled.AddToPhotos, "checkIcon")
@@ -272,12 +300,12 @@ fun SaveEventScreen(
 
                         Button(
                             onClick = {
-                                      createEventModel.endTime.value = createEventModel
-                                          .startTime
-                                          .value
-                                          .toJavaLocalTime()
-                                          .plusMinutes(duration.minutes.toLong())
-                                          .toKotlinLocalTime()
+                                  createEventModel.endTime.value = createEventModel
+                                      .startTime
+                                      .value
+                                      .toJavaLocalTime()
+                                      .plusMinutes(duration.minutes.toLong())
+                                      .toKotlinLocalTime()
                             },
                             colors = ButtonDefaults.textButtonColors(),
                         ) {
@@ -308,14 +336,7 @@ fun SaveEventScreen(
                     .height(64.dp),
                 enabled = createEventModel.isValid(isAllDay.value),
                 onClick = {
-                    eventsModel.insertEvent(
-                        EventsModel.createEvent(
-                            createEventModel,
-                            date,
-                            isAllDay.value,
-                        ),
-                    )
-
+                    createEvent();
                     navController.popBackStack()
                 },
             ) {

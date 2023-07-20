@@ -89,6 +89,26 @@ class CreateEventModel(): ViewModel() {
     fun isValid(isAllDay: Boolean = false): Boolean =
         title.value.isNotEmpty() && (isAllDay || startTime.value < endTime.value);
 
+    fun clear() {
+        startTime.value = Clock
+            .System
+            .now()
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+            .time;
+        endTime.value = Clock
+            .System
+            .now()
+            .plus(1, DateTimeUnit.HOUR, TimeZone.currentSystemDefault())
+            .toLocalDateTime(TimeZone.currentSystemDefault()).time;
+        date.value = Clock
+            .System
+            .now()
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+            .date;
+        title.value = "";
+        description.value = "";
+    }
+
     val isAllDay: Boolean
         get() = startTime.value == LocalTime(0, 0) && endTime.value == LocalTime(23, 59);
 }
