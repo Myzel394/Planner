@@ -37,6 +37,12 @@ class EventsModel : ViewModel() {
         }
     }
 
+    fun updateEvent(event: Event) {
+        viewModelScope.launch(Dispatchers.IO) {
+            AppDatabase.INSTANCE!!.eventDAO().update(event);
+        }
+    }
+
     @Composable
     fun getAsSorted(initialState: List<Event> = listOf()): List<Event> {
         return events.collectAsState(initial = initialState).value.sortedBy { it.startTime }

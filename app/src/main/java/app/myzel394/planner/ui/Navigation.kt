@@ -1,6 +1,7 @@
 package app.myzel394.planner.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -28,18 +29,25 @@ fun Navigation(
             )
         }
         composable(
-            route = Screen.CreateEvent.route + "/{date}",
+            route = Screen.SaveEvent.route + "/{date}/{event}",
             arguments = listOf(
                 navArgument("date") {
                     type = NavType.StringType
+                },
+                navArgument("event") {
+                    type = NavType.LongType
+                    defaultValue = 0L
                 }
             )
 
         ) { entry ->
+            val event = entry.arguments!!.getLong("event", 0L)
+
             SaveEventScreen(
                 navController = navController,
                 date = LocalDateTime.parse(entry.arguments!!.getString("date")!!).date,
                 eventsModel = eventsModel,
+                event = if (event == 0L) null else event,
             )
         }
     }

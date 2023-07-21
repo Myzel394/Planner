@@ -2,6 +2,7 @@ package app.myzel394.planner.ui.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,7 +32,6 @@ import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,7 +48,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import app.myzel394.planner.models.EventsModel
 import app.myzel394.planner.ui.Screen
-import app.myzel394.planner.ui.utils.dpToPx
 import app.myzel394.planner.ui.utils.getDividers
 import app.myzel394.planner.ui.utils.pxToDp
 import app.myzel394.planner.ui.widgets.DayViewSchedule
@@ -83,13 +82,14 @@ fun OverviewScreen(
             LargeFloatingActionButton(
                 onClick = {
                     navController.navigate(
-                        Screen.CreateEvent.withArgs(
+                        Screen.SaveEvent.withArgs(
                             toISOString(
                                 Clock
                                     .System
                                     .now()
                                     .toLocalDateTime(TimeZone.currentSystemDefault()),
-                            )
+                            ),
+                            0L.toString(),
                         ),
                     );
                 }
@@ -167,6 +167,21 @@ fun OverviewScreen(
                                     )
                                     .width(
                                         pxToDp(size.width).times(1f / divider)
+                                    )
+                                    .clickable(
+                                        onClick = {
+                                            navController.navigate(
+                                                Screen.SaveEvent.withArgs(
+                                                    toISOString(
+                                                        Clock
+                                                            .System
+                                                            .now()
+                                                            .toLocalDateTime(TimeZone.currentSystemDefault()),
+                                                    ),
+                                                    event.id.toString(),
+                                                ),
+                                            );
+                                        }
                                     )
                             ) {
                                 SwipeToDismiss(

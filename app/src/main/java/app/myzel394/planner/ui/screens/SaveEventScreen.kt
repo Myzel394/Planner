@@ -12,9 +12,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideIn
-import androidx.compose.animation.slideOut
-import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,6 +25,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddToPhotos
 import androidx.compose.material.icons.filled.Check
@@ -48,6 +48,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.PlainTooltipBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -60,10 +61,19 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.myzel394.planner.constants.ExampleDuration
+import app.myzel394.planner.database.AppDatabase
+import app.myzel394.planner.database.objects.Event
 import app.myzel394.planner.models.CreateEventModel
 import app.myzel394.planner.models.EventsModel
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.atDate
@@ -79,29 +89,49 @@ fun SaveEventScreen(
     navController: NavController,
     date: LocalDate,
     eventsModel: EventsModel,
+    event: Long? = null,
     createEventModel: CreateEventModel = viewModel(),
 ) {
     val context = LocalContext.current;
     val fragmentManager = (LocalContext.current as AppCompatActivity).supportFragmentManager
     val focusRequester = remember { FocusRequester() }
+    val eventInstance = remember {
+        mutableStateOf<Event?>(null)
+    }
 
     val isAllDay = remember {
         mutableStateOf(false)
     }
 
-    fun createEvent() {
-        eventsModel.insertEvent(
-            EventsModel.createEvent(
+    fun saveEvent() {
+        if (event == null) {
+            val newEvent = EventsModel.createEvent(
                 createEventModel,
                 date,
                 isAllDay.value,
-            ),
-        )
+            )
+
+            eventsModel.insertEvent(newEvent)
+        } else {
+            eventInstance.value!!.applyModel(createEventModel);
+
+            eventsModel.updateEvent(eventInstance.value!!)
+        }
     }
 
     LaunchedEffect(Unit) {
-        createEventModel.clear();
+        createEventModel.clear()
         focusRequester.requestFocus()
+
+        if (event != null) {
+            val eventValue = AppDatabase.INSTANCE!!.eventDAO().findById(event)
+
+            eventValue.collectLatest {
+                eventInstance.value = it
+
+                createEventModel.applyEvent(it)
+            }
+        }
     }
 
     Scaffold(
@@ -124,31 +154,34 @@ fun SaveEventScreen(
                     }
                 },
                 actions = {
-                    PlainTooltipBox(
-                        tooltip = {
-                            Text("Save & create another event")
-                        },
-                    ) {
-                        IconButton(
-                            modifier = Modifier.tooltipAnchor(),
-                            onClick = {
-                                createEvent();
-                                createEventModel.clear();
-                                focusRequester.requestFocus();
-
-                                Toast.makeText(
-                                    context,
-                                    "Event created",
-                                    Toast.LENGTH_SHORT,
-                                ).show();
+                    if (event == null)
+                        PlainTooltipBox(
+                            tooltip = {
+                                Text("Save & create another event")
                             },
                         ) {
-                            Icon(Icons.Filled.AddToPhotos, "checkIcon")
+                            IconButton(
+                                modifier = Modifier.tooltipAnchor(),
+                                onClick = {
+                                    saveEvent();
+                                    createEventModel.clear();
+                                    focusRequester.requestFocus();
+
+                                    Toast.makeText(
+                                        context,
+                                        "Event created",
+                                        Toast.LENGTH_SHORT,
+                                    ).show();
+                                },
+                            ) {
+                                Icon(Icons.Filled.AddToPhotos, "checkIcon")
+                            }
                         }
-                    }
                 },
                 title = {
-                    Text("Create Event")
+                    Text(
+                        if (event == null) "Create Event" else "Update ${eventInstance.value?.title}"
+                    )
                 },
             )
         }
@@ -336,7 +369,7 @@ fun SaveEventScreen(
                     .height(64.dp),
                 enabled = createEventModel.isValid(isAllDay.value),
                 onClick = {
-                    createEvent();
+                    saveEvent()
                     navController.popBackStack()
                 },
             ) {
@@ -347,7 +380,9 @@ fun SaveEventScreen(
                         .size(ButtonDefaults.IconSize)
                 )
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text("Create")
+                Text(
+                    if (event == null) "Create" else "Save",
+                )
             }
         }
     }

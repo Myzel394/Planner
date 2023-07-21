@@ -109,6 +109,28 @@ class CreateEventModel(): ViewModel() {
         description.value = "";
     }
 
+    fun applyEvent(event: Event) {
+        startTime.value = event.startTime;
+        endTime.value = event.endTime;
+        date.value = event.date;
+        title.value = event.title;
+        description.value = event.description;
+    }
+
     val isAllDay: Boolean
         get() = startTime.value == LocalTime(0, 0) && endTime.value == LocalTime(23, 59);
+
+    companion object {
+        fun fromEvent(event: Event): CreateEventModel {
+            val createEventModel = CreateEventModel();
+
+            createEventModel.title.value = event.title;
+            createEventModel.description.value = event.description;
+            createEventModel.startTime.value = event.startTime;
+            createEventModel.endTime.value = event.endTime;
+            createEventModel.date.value = event.date;
+
+            return createEventModel;
+        }
+    }
 }
