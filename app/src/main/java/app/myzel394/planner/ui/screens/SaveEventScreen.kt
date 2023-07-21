@@ -31,6 +31,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddToPhotos
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Title
@@ -130,6 +131,7 @@ fun SaveEventScreen(
                 eventInstance.value = it
 
                 createEventModel.applyEvent(it)
+                isAllDay.value = it.isAllDay
             }
         }
     }
@@ -175,6 +177,25 @@ fun SaveEventScreen(
                                 },
                             ) {
                                 Icon(Icons.Filled.AddToPhotos, "checkIcon")
+                            }
+                        }
+                    else
+                        PlainTooltipBox(
+                            tooltip = {
+                                Text("Delete")
+                            }
+                        ) {
+                            IconButton(
+                                modifier = Modifier.tooltipAnchor(),
+                                onClick = {
+                                    eventsModel.removeEvent(eventInstance.value!!);
+                                    navController.popBackStack()
+                                },
+                            ) {
+                                Icon(
+                                    Icons.Filled.DeleteForever,
+                                    "deleteIcon",
+                                )
                             }
                         }
                 },

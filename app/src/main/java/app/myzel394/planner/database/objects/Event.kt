@@ -46,4 +46,8 @@ data class Event(
         endTime = createEventModel.endTime.value;
         date = createEventModel.date.value;
     }
+
+    val isAllDay: Boolean
+        get() = startTime == LocalTime(0, 0) && endTime == LocalTime(23, 59);
+
 }

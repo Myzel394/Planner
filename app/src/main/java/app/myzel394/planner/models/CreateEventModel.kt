@@ -117,9 +117,6 @@ class CreateEventModel(): ViewModel() {
         description.value = event.description;
     }
 
-    val isAllDay: Boolean
-        get() = startTime.value == LocalTime(0, 0) && endTime.value == LocalTime(23, 59);
-
     companion object {
         fun fromEvent(event: Event): CreateEventModel {
             val createEventModel = CreateEventModel();

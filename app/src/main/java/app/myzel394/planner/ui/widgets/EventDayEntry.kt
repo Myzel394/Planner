@@ -30,9 +30,7 @@ fun EventDayEntry(
         modifier = Modifier
             .fillMaxWidth()
             .height(height)
-            .background(
-                color = MaterialTheme.colorScheme.primaryContainer,
-            )
+            .background(color = MaterialTheme.colorScheme.primaryContainer)
             .padding(
                 if (isSmall) 3.dp else 6.dp
             )
