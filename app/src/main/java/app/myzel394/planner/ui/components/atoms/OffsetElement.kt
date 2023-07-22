@@ -1,4 +1,4 @@
-package app.myzel394.planner.ui.widgets
+package app.myzel394.planner.ui.components.atoms
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
