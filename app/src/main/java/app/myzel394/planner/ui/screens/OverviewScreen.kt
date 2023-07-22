@@ -1,6 +1,9 @@
 package app.myzel394.planner.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -24,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import app.myzel394.planner.models.EventsModel
 import app.myzel394.planner.ui.Screen
-import app.myzel394.planner.ui.components.molecules.AllDayEventsHeader
+import app.myzel394.planner.ui.components.widgets.AllDayEventsOverview
 import app.myzel394.planner.ui.components.widgets.EventsOverview
 import app.myzel394.planner.ui.utils.pxToDp
 import app.myzel394.planner.utils.toISOString
@@ -44,6 +47,10 @@ fun OverviewScreen(
     val showAllDayEvents = remember {
         mutableStateOf(false);
     }
+    val allDayEvents = events.filter { it.isAllDay }
+    val nonAllDayEvents = events.filter { !it.isAllDay }
+    val windowHeight = pxToDp(LocalContext.current.resources.displayMetrics.heightPixels)
+    val elementHeight = windowHeight / 12
 
     Scaffold(
         floatingActionButton = {
@@ -70,20 +77,46 @@ fun OverviewScreen(
             }
         }
     ) { contentPadding ->
-        Box(
+        Column(
             modifier = Modifier
                 .padding(contentPadding)
         ) {
-                AnimatedVisibility(
-                    visible = !showAllDayEvents.value,
-                    enter = expandVertically(),
-                    exit = shrinkVertically(),
-                ) {
-                    EventsOverview(
-                        events = events,
-                        navController = navController,
-                        eventsModel = eventsModel,
-                    )
+            AnimatedVisibility(
+                visible = showAllDayEvents.value,
+                enter = expandVertically(),
+                exit = shrinkVertically(
+                    spring(stiffness = Spring.StiffnessLow)
+                ),
+            ) {
+                AllDayEventsOverview(
+                    events = allDayEvents,
+                    date = Clock
+                        .System
+                        .now()
+                        .toLocalDateTime(TimeZone.currentSystemDefault())
+                        .date,
+                    onShowAllDayChange = {
+                        showAllDayEvents.value = !showAllDayEvents.value;
+                    },
+                )
+            }
+            AnimatedVisibility(
+                visible = !showAllDayEvents.value,
+                enter = expandVertically(
+                    spring(stiffness = Spring.StiffnessHigh),
+                ),
+                exit = shrinkVertically(),
+            ) {
+                EventsOverview(
+                    allDayEvents = allDayEvents,
+                    nonAllDayEvents = nonAllDayEvents,
+                    navController = navController,
+                    eventsModel = eventsModel,
+                    elementHeight = elementHeight,
+                    onAllDayEventsVisibleChange = {
+                        showAllDayEvents.value = !showAllDayEvents.value;
+                    },
+                )
             }
         }
     }
