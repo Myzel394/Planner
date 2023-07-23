@@ -1,39 +1,48 @@
 package app.myzel394.planner.ui.components.molecules
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.DismissDirection
+import androidx.compose.material3.DismissValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SwipeToDismiss
+import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.modifier.modifierLocalMapOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.myzel394.planner.constants.MIN_EVENT_HEIGHT
 import app.myzel394.planner.database.objects.Event
 import app.myzel394.planner.helpers.CalendarColors
+import app.myzel394.planner.ui.components.atoms.DeleteForeverSwipeBackground
+import app.myzel394.planner.ui.components.atoms.CalendarEventDayEntry
 import app.myzel394.planner.ui.components.atoms.EventDayEntry
 import kotlin.math.min
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AllDayEventsHeader(
     allDayEvents: List<Event>,
     elementHeight: Dp,
     onShowAllDayChange: () -> Unit,
     onGoToEvent: (Event) -> Unit,
+    onDelete: (Event) -> Unit,
 ) {
     val calendarColors = CalendarColors.default()
 
@@ -65,24 +74,40 @@ fun AllDayEventsHeader(
                 )
 
             for (event in visibleEvents) {
-                Box(
-                    modifier = Modifier
-                        .height(elementHeight)
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .clip(MaterialTheme.shapes.small)
-                        .clickable(
-                            onClick = {
-                                onGoToEvent(event)
+                val dismissState = rememberDismissState(
+                    confirmValueChange = { dismissValue ->
+                        when (dismissValue) {
+                            DismissValue.DismissedToEnd -> {
+                                onDelete(event)
                             }
+
+                            else -> {}
+                        }
+                        false
+                    }
+                )
+
+                SwipeToDismiss(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(elementHeight)
+                        .weight(1f)
+                        .clip(MaterialTheme.shapes.small),
+                    state = dismissState,
+                    directions = setOf(DismissDirection.StartToEnd),
+                    dismissContent = {
+                        EventDayEntry(
+                            event = event,
+                            modifier = Modifier
+                                .fillMaxSize()
                         )
-                ) {
-                    EventDayEntry(
-                        baseHeight = elementHeight,
-                        event = event,
-                        minHeight = MIN_EVENT_HEIGHT,
-                    )
-                }
+                    },
+                    background = {
+                        DeleteForeverSwipeBackground(
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                )
             }
             if (allDayEvents.size > 4)
                 IconButton(

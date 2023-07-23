@@ -52,17 +52,14 @@ fun EventsOverview(
                 allDayEvents = allDayEvents,
                 elementHeight = elementHeight,
                 onShowAllDayChange = onAllDayEventsVisibleChange,
-                onGoToEvent = {
-                    goToEvent(it)
-                }
+                onGoToEvent = ::goToEvent,
+                onDelete = eventsModel::removeEvent,
             )
         EventsCalendar(
             elementHeight = elementHeight,
             events = nonAllDayEvents,
             onDelete = eventsModel::removeEvent,
-            onGoToEvent = {
-                goToEvent(it)
-            }
+            onGoToEvent = ::goToEvent,
         )
         if (nonAllDayEvents.isNotEmpty())
             AddMoreEventsFooter()

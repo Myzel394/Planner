@@ -98,6 +98,7 @@ fun OverviewScreen(
                     onShowAllDayChange = {
                         showAllDayEvents.value = !showAllDayEvents.value;
                     },
+                    onDelete = eventsModel::removeEvent,
                 )
             }
             AnimatedVisibility(

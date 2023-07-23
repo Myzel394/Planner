@@ -7,12 +7,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
@@ -22,9 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.onSizeChanged
@@ -38,7 +33,8 @@ import app.myzel394.planner.ui.utils.getDividers
 import app.myzel394.planner.ui.utils.pxToDp
 import app.myzel394.planner.ui.components.atoms.DayViewSchedule
 import app.myzel394.planner.ui.components.atoms.DayViewScheduleSidebar
-import app.myzel394.planner.ui.components.atoms.EventDayEntry
+import app.myzel394.planner.ui.components.atoms.DeleteForeverSwipeBackground
+import app.myzel394.planner.ui.components.atoms.CalendarEventDayEntry
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -121,27 +117,16 @@ fun EventsCalendar(
                         state = dismissState,
                         directions = setOf(DismissDirection.StartToEnd),
                         dismissContent = {
-                            EventDayEntry(
+                            CalendarEventDayEntry(
                                 baseHeight = elementHeight,
                                 event = event,
                                 minHeight = MIN_EVENT_HEIGHT,
                             )
                         },
                         background = {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(MaterialTheme.shapes.small)
-                                    .padding(6.dp)
-                            ) {
-                                Icon(
-                                    Icons.Filled.DeleteForever,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onErrorContainer,
-                                    modifier = Modifier
-                                        .align(Alignment.CenterStart),
-                                )
-                            }
+                            DeleteForeverSwipeBackground(
+                                modifier = Modifier.fillMaxSize()
+                            )
                         }
                     )
                 }
