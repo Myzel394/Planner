@@ -1,4 +1,4 @@
-package app.myzel394.planner.ui.components.molecules
+package app.myzel394.planner.ui.components.overview.molecules
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,9 +30,9 @@ import androidx.compose.ui.unit.dp
 import app.myzel394.planner.constants.MIN_EVENT_HEIGHT
 import app.myzel394.planner.database.objects.Event
 import app.myzel394.planner.helpers.CalendarColors
-import app.myzel394.planner.ui.components.atoms.DeleteForeverSwipeBackground
-import app.myzel394.planner.ui.components.atoms.CalendarEventDayEntry
-import app.myzel394.planner.ui.components.atoms.EventDayEntry
+import app.myzel394.planner.ui.components.overview.atoms.DeleteForeverSwipeBackground
+import app.myzel394.planner.ui.components.overview.atoms.CalendarEventDayEntry
+import app.myzel394.planner.ui.components.overview.atoms.EventDayEntry
 import kotlin.math.min
 
 @OptIn(ExperimentalMaterial3Api::class)

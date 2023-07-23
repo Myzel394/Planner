@@ -27,8 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import app.myzel394.planner.models.EventsModel
 import app.myzel394.planner.ui.Screen
-import app.myzel394.planner.ui.components.widgets.AllDayEventsOverview
-import app.myzel394.planner.ui.components.widgets.EventsOverview
+import app.myzel394.planner.ui.components.overview.widgets.AllDayEventsOverview
+import app.myzel394.planner.ui.components.overview.widgets.EventsOverview
 import app.myzel394.planner.ui.utils.pxToDp
 import app.myzel394.planner.utils.toISOString
 import kotlinx.datetime.Clock

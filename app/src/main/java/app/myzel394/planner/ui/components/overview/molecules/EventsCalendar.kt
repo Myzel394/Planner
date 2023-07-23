@@ -1,4 +1,4 @@
-package app.myzel394.planner.ui.components.molecules
+package app.myzel394.planner.ui.components.overview.molecules
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,10 +31,10 @@ import app.myzel394.planner.database.objects.Event
 import app.myzel394.planner.helpers.CalendarColors
 import app.myzel394.planner.ui.utils.getDividers
 import app.myzel394.planner.ui.utils.pxToDp
-import app.myzel394.planner.ui.components.atoms.DayViewSchedule
-import app.myzel394.planner.ui.components.atoms.DayViewScheduleSidebar
-import app.myzel394.planner.ui.components.atoms.DeleteForeverSwipeBackground
-import app.myzel394.planner.ui.components.atoms.CalendarEventDayEntry
+import app.myzel394.planner.ui.components.overview.atoms.DayViewSchedule
+import app.myzel394.planner.ui.components.overview.atoms.DayViewScheduleSidebar
+import app.myzel394.planner.ui.components.overview.atoms.DeleteForeverSwipeBackground
+import app.myzel394.planner.ui.components.overview.atoms.CalendarEventDayEntry
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -1,4 +1,4 @@
-package app.myzel394.planner.ui.components.molecules
+package app.myzel394.planner.ui.components.overview.molecules
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
