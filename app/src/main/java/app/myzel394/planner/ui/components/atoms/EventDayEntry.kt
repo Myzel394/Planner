@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.myzel394.planner.database.objects.Event
+import app.myzel394.planner.database.objects.EventColors
 
 
 @Composable
@@ -17,21 +18,23 @@ fun EventDayEntry(
     modifier: Modifier = Modifier,
     event: Event,
 ) {
+    val colors = EventColors.fromEvent(event)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = MaterialTheme.colorScheme.primaryContainer)
+            .background(color = colors.background)
             .padding(6.dp)
             .then(modifier),
     ) {
         Text(
             text = event.title,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            color = colors.title,
             fontSize = MaterialTheme.typography.bodyMedium.fontSize,
         )
         Text(
             text = event.description,
-            color = MaterialTheme.colorScheme.onSecondaryContainer,
+            color = colors.description,
             fontSize = MaterialTheme.typography.bodySmall.fontSize,
         )
     }
