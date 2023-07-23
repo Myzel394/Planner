@@ -3,12 +3,11 @@ package app.myzel394.planner.database.objects
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
-import androidx.room.TypeConverters
 import app.myzel394.planner.models.CreateEventModel
-import com.google.android.material.color.utilities.MaterialDynamicColors.background
+import com.godaddy.android.colorpicker.HsvColor
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -22,7 +21,15 @@ data class Event(
     var title: String = "",
     var description: String = "",
     var color: EventColor = EventColor.primary,
+    // No idea why, but using a color converter doesn't work
+    var customColorRaw: Int? = null,
 ) {
+    var customColor: Color?
+        set(value) {
+            customColorRaw = value?.toArgb()
+        }
+        get() = customColorRaw?.let { Color(it) }
+
     val startDateTime
         get() = LocalDateTime(
             date.year,
@@ -50,6 +57,8 @@ data class Event(
         startTime = createEventModel.startTime.value;
         endTime = createEventModel.endTime.value;
         date = createEventModel.date.value;
+        color = createEventModel.color.value;
+        customColorRaw = createEventModel.customColor.value?.toArgb();
     }
 
     val isAllDay: Boolean
@@ -70,24 +79,50 @@ data class EventColors(
 ) {
     companion object {
         @Composable
+        fun getBackgroundMap(): Map<EventColor, Color> = mapOf(
+            EventColor.primary to MaterialTheme.colorScheme.primaryContainer,
+            EventColor.secondary to MaterialTheme.colorScheme.secondaryContainer,
+            EventColor.tertiary to MaterialTheme.colorScheme.tertiaryContainer,
+            EventColor.custom to Color(0xFF000000),
+        )
+
+        @Composable
+        fun getTitleMap(): Map<EventColor, Color> = mapOf(
+            EventColor.primary to MaterialTheme.colorScheme.onPrimaryContainer,
+            EventColor.secondary to MaterialTheme.colorScheme.onSecondaryContainer,
+            EventColor.tertiary to MaterialTheme.colorScheme.onTertiaryContainer,
+            EventColor.custom to Color(0xFFFFFFFF),
+        )
+
+        @Composable
+        fun getDescriptionMap(): Map<EventColor, Color> = mapOf(
+            EventColor.primary to MaterialTheme.colorScheme.secondary,
+            EventColor.secondary to MaterialTheme.colorScheme.tertiary,
+            EventColor.tertiary to MaterialTheme.colorScheme.onSurface,
+            EventColor.custom to Color(0xFFAAAAAA),
+        )
+
+        @Composable
         fun fromEvent(event: Event) = EventColors(
             background = when (event.color) {
-                EventColor.primary -> MaterialTheme.colorScheme.primaryContainer
-                EventColor.secondary -> MaterialTheme.colorScheme.secondaryContainer
-                EventColor.tertiary -> MaterialTheme.colorScheme.tertiaryContainer
-                EventColor.custom -> Color(0x000000)
+                EventColor.custom -> {
+                    val hsv = HsvColor.from(event.customColor!!)
+
+                    hsv.copy(value = hsv.value * 0.3f).toColor()
+                }
+                else -> getBackgroundMap()[event.color]!!
             },
             title = when (event.color) {
-                EventColor.primary -> MaterialTheme.colorScheme.onPrimaryContainer
-                EventColor.secondary -> MaterialTheme.colorScheme.onSecondaryContainer
-                EventColor.tertiary -> MaterialTheme.colorScheme.onTertiaryContainer
-                EventColor.custom -> Color(0xFFFFFF)
+                EventColor.custom -> event.customColor!!
+                else -> getTitleMap()[event.color]!!
             },
             description = when (event.color) {
-                EventColor.primary -> MaterialTheme.colorScheme.secondary
-                EventColor.secondary -> MaterialTheme.colorScheme.tertiary
-                EventColor.tertiary -> MaterialTheme.colorScheme.onSurface
-                EventColor.custom -> Color(0x000000)
+                EventColor.custom -> {
+                    val hsv = HsvColor.from(event.customColor!!)
+
+                    hsv.copy(value = hsv.value * 0.8f).toColor()
+                }
+                else -> getDescriptionMap()[event.color]!!
             }
         )
     }

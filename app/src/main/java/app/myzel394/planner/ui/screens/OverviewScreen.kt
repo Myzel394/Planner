@@ -21,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -44,7 +45,7 @@ fun OverviewScreen(
     eventsModel: EventsModel,
 ) {
     val events = eventsModel.getAsSorted();
-    val showAllDayEvents = remember {
+    val showAllDayEvents = rememberSaveable {
         mutableStateOf(false);
     }
     val allDayEvents = events.filter { it.isAllDay }

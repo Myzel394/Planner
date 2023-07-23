@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import app.myzel394.planner.database.objects.Event
+import app.myzel394.planner.database.objects.EventColors
 
 @Composable
 fun CalendarEventDayEntry(
@@ -24,12 +25,13 @@ fun CalendarEventDayEntry(
 ) {
     val height = max(minHeight, getHeight(baseHeight, event.durationInMinutes));
     val isSmall = height <= 40.dp;
+    val colors = EventColors.fromEvent(event)
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .height(height)
-            .background(color = MaterialTheme.colorScheme.primaryContainer)
+            .background(color = colors.background)
             .padding(
                 if (isSmall) 3.dp else 6.dp
             )
@@ -37,13 +39,13 @@ fun CalendarEventDayEntry(
     ) {
         Text(
             text = event.title,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            color = colors.title,
             fontSize = if (isSmall) 10.sp else MaterialTheme.typography.bodyMedium.fontSize,
         )
         if (!isSmall) {
             Text(
                 text = event.description,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                color = colors.description,
                 fontSize = MaterialTheme.typography.bodySmall.fontSize,
             )
         }

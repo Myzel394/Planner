@@ -1,5 +1,7 @@
 package app.myzel394.planner.database
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.room.TypeConverter
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime

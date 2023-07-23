@@ -1,6 +1,7 @@
 package app.myzel394.planner.models
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import app.myzel394.planner.constants.DOUBLE_SPACES_REGEX
 import app.myzel394.planner.constants.NON_ASCII_REGEX
 import app.myzel394.planner.database.daos.EventDAO
 import app.myzel394.planner.database.objects.Event
+import app.myzel394.planner.database.objects.EventColor
 import app.myzel394.planner.utils.formatTime
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -50,6 +52,8 @@ class CreateEventModel(): ViewModel() {
     );
     var title = mutableStateOf<String>("");
     var description = mutableStateOf<String>("");
+    var color = mutableStateOf<EventColor>(EventColor.primary);
+    var customColor = mutableStateOf<Color?>(null)
 
     fun setTitle(title: String) {
         this.title.value = title.replace(DOUBLE_SPACES_REGEX, " ").replace(NON_ASCII_REGEX, "");
@@ -87,7 +91,9 @@ class CreateEventModel(): ViewModel() {
     }
 
     fun isValid(isAllDay: Boolean = false): Boolean =
-        title.value.isNotEmpty() && (isAllDay || startTime.value < endTime.value);
+        title.value.isNotEmpty()
+                && (isAllDay || startTime.value < endTime.value)
+                && (color.value == EventColor.custom && customColor.value != null)
 
     fun clear() {
         startTime.value = Clock
@@ -107,6 +113,8 @@ class CreateEventModel(): ViewModel() {
             .date;
         title.value = "";
         description.value = "";
+        color.value = EventColor.primary;
+        customColor.value = null;
     }
 
     fun applyEvent(event: Event) {
@@ -115,6 +123,8 @@ class CreateEventModel(): ViewModel() {
         date.value = event.date;
         title.value = event.title;
         description.value = event.description;
+        color.value = event.color;
+        customColor.value = event.customColor;
     }
 
     companion object {
@@ -126,6 +136,8 @@ class CreateEventModel(): ViewModel() {
             createEventModel.startTime.value = event.startTime;
             createEventModel.endTime.value = event.endTime;
             createEventModel.date.value = event.date;
+            createEventModel.color.value = event.color;
+            createEventModel.customColor.value = event.customColor;
 
             return createEventModel;
         }
