@@ -28,15 +28,22 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.PlainTooltipBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.myzel394.planner.database.AppDatabase
@@ -44,12 +51,18 @@ import app.myzel394.planner.database.objects.Event
 import app.myzel394.planner.database.objects.EventColor
 import app.myzel394.planner.models.CreateEventModel
 import app.myzel394.planner.models.EventsModel
+import app.myzel394.planner.models.FetchEventModel
 import app.myzel394.planner.ui.components.common.atoms.SingleActionButton
 import app.myzel394.planner.ui.components.save_event.atoms.DurationSelect
 import app.myzel394.planner.ui.components.save_event.atoms.EventColorPicker
 import app.myzel394.planner.ui.components.save_event.atoms.TimeRangePicker
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
     ExperimentalAnimationApi::class
@@ -82,26 +95,26 @@ fun SaveEventScreen(
 
             eventsModel.insertEvent(newEvent)
         } else {
-            eventInstance.value!!.applyModel(createEventModel);
+            eventInstance.value!!.applyModel(createEventModel)
 
             eventsModel.updateEvent(eventInstance.value!!)
+        }
+    }
+
+    if (event != null) {
+        val fetchModel = FetchEventModel(event)
+        eventInstance.value = fetchModel.eventInstance.collectAsState(initial = null).value
+
+        if (eventInstance.value != null) {
+            SideEffect {
+                createEventModel.applyEvent(eventInstance.value!!)
+            }
         }
     }
 
     LaunchedEffect(Unit) {
         createEventModel.clear()
         focusRequester.requestFocus()
-
-        if (event != null) {
-            val eventValue = AppDatabase.INSTANCE!!.eventDAO().findById(event)
-
-            eventValue.collectLatest {
-                eventInstance.value = it
-
-                createEventModel.applyEvent(it)
-                isAllDay.value = it.isAllDay
-            }
-        }
     }
 
     Scaffold(
@@ -240,6 +253,7 @@ fun SaveEventScreen(
                     saveEvent()
                     navController.popBackStack()
                 },
+                enabled = createEventModel.isValid(),
                 label = if (event == null) "Create" else "Update"
             )
         }

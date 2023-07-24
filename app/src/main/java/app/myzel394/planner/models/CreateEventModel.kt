@@ -93,7 +93,7 @@ class CreateEventModel(): ViewModel() {
     fun isValid(isAllDay: Boolean = false): Boolean =
         title.value.isNotEmpty()
                 && (isAllDay || startTime.value < endTime.value)
-                && (color.value == EventColor.custom && customColor.value != null)
+                && (color.value != EventColor.custom || customColor.value != null)
 
     fun clear() {
         startTime.value = Clock
