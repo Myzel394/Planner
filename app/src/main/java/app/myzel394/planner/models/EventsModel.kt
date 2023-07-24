@@ -6,11 +6,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.room.Database
 import app.myzel394.planner.database.AppDatabase
-import app.myzel394.planner.database.daos.EventDAO
 import app.myzel394.planner.database.objects.Event
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,8 +41,17 @@ class EventsModel : ViewModel() {
     }
 
     @Composable
-    fun getAsSorted(initialState: List<Event> = listOf()): List<Event> {
+    fun collectAsSorted(initialState: List<Event> = listOf()): List<Event> {
         return events.collectAsState(initial = initialState).value.sortedBy { it.startTime }
+    }
+
+    @Composable
+    fun collectFromDate(date: LocalDate): List<Event> {
+        return events
+            .collectAsState(initial = listOf())
+            .value
+            .filter { it.date == date }
+            .sortedBy { it.startTime}
     }
 
     companion object {
