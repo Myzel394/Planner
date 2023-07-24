@@ -1,5 +1,6 @@
 package app.myzel394.planner.ui.components.overview.atoms
 
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
@@ -16,9 +17,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import app.myzel394.planner.ui.components.common.atoms.ExtendedIconButton
 import app.myzel394.planner.utils.formatDate
+import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
@@ -33,6 +37,8 @@ fun OverviewAppBar(
     date: LocalDate,
     onGoToDate: (LocalDate) -> Unit,
 ) {
+    val fragmentManager = (LocalContext.current as AppCompatActivity).supportFragmentManager
+
     TopAppBar(
         modifier = Modifier
             .shadow(4.dp),
@@ -46,7 +52,7 @@ fun OverviewAppBar(
             )
         },
         actions = {
-            IconButton(
+            ExtendedIconButton(
                 onClick = {
                     onGoToDate(
                         Clock
@@ -55,6 +61,20 @@ fun OverviewAppBar(
                             .toLocalDateTime(TimeZone.currentSystemDefault())
                             .date
                     )
+                },
+                onLongClick = {
+                    val datePicker =
+                        MaterialDatePicker.Builder.datePicker()
+                            .setTitleText("Select date")
+                            .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                            .build()
+                    datePicker.addOnPositiveButtonClickListener {
+                        onGoToDate(
+                            LocalDate.fromEpochDays((it / 86400000).toInt())
+                        )
+                    }
+
+                    datePicker.show(fragmentManager, "date")
                 }
             ) {
                 Icon(
