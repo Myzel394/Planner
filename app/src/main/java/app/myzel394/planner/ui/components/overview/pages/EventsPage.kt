@@ -27,7 +27,7 @@ fun EventsPage(
     date: LocalDate,
     navController: NavController,
 ) {
-    val events = eventsModel.collectAsSorted();
+    val events = eventsModel.collectFromDate(date);
     val showAllDayEvents = rememberSaveable {
         mutableStateOf(false);
     }
